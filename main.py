@@ -40,6 +40,15 @@ async def transcribe_voice(msg: T.Message):
 
     await bot.edit_message_text(text, msg.chat.id, raspuns.id)
 
+@bot.message_handler(commands=["ajutor","start", "help"])
+async def ajutor(msg: T.Message):
+    H_MESSAGE = """
+Sunt un robot pentru transcrierea vocii. 
+Transmite-mi un mesaj vocal și eu îl voi transcrie.
+"""
+    
+    await bot.send_message(msg.chat.id, H_MESSAGE)
+
 
 
 async def main():
