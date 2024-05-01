@@ -1,9 +1,12 @@
 * ( ) Opțiuni/ Ideei
   - ( ) Opțiunea pentru creearea mai multor formate (vtt, etc.)
   - (?) dacă textul v-a fi prea mare, transmite în alt format
-  - ( ) suport la transcrierea fișierelor audio pe lîngă cele vocale
-  - ( ) suport la transcrierea fișierelor video
+  - (x) suport la transcrierea fișierelor audio pe lîngă cele vocale
+  - (x) suport la transcrierea fișierelor video
   - (x) Ajutor/ start/ începe
   - (?) formatare ieșiriii
+  ---
 
 * ( ) Corectări
+  - ( ) Format
+  ---
