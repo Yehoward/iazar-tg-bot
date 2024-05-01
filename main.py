@@ -93,7 +93,7 @@ async def transcribe_video(msg: T.Message):
 async def ajutor(msg: T.Message):
     H_MESSAGE = """
 Sunt un robot pentru transcrierea vocii. 
-Transmite-mi un mesaj vocal și eu îl voi transcrie.
+Transmite-mi un mesaj vocal, un fișier audio sau un video și eu îl voi transcrie.
 """
     
     await bot.send_message(msg.chat.id, H_MESSAGE)
