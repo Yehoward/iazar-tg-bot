@@ -1,9 +1,11 @@
-from os import environ, remove
+from os import environ
+import os
 import subprocess
 import sys
 import asyncio
 from tempfile import NamedTemporaryFile
 from subprocess import Popen
+from pathlib import Path
 
 from telebot.async_telebot import AsyncTeleBot, types as T
 
@@ -56,12 +58,20 @@ async def transcribe_voice(msg: T.Message):
 
     await bot.edit_message_text(text, msg.chat.id, raspuns.id)
 
-@bot.message_handler( content_types=["video"])
+
+@bot.message_handler( content_types=["video", "video_note"])
 async def transcribe_video(msg: T.Message):
 
     print("am primit mesaj video")
 
-    msg_content = msg.video
+    match msg.content_type:
+        case "video":
+            msg_content = msg.video
+        case "video_note":
+            msg_content = msg.video_note
+        case _:
+            print("transcribe_video: wrogn content type", file=sys.stderr)
+            return
     
     if msg_content is None:
         print("transcribe_video: Telebot bug", file=sys.stderr)
@@ -77,15 +87,30 @@ async def transcribe_video(msg: T.Message):
         await bot.send_message(msg.chat.id,"Fișierul este mai mare de 20mb")
         return
 
-    with NamedTemporaryFile("wb+", suffix=".wav") as f:
-        f.flush()
+    tvideo_path = f"/tmp/{file.file_path.split("/")[-1]}"
 
-    ffmpeg_cmd: list =  f"ffmpeg -i - {f.name}".split()
-    with Popen(ffmpeg_cmd, stdin=subprocess.PIPE) as proc:
-        proc.communicate(input=data)
-    text = transcribe(f.name)
 
-    remove(f.name)
+    with open(tvideo_path, "wb+") as fi:
+        fi.write(data)
+
+
+    f = NamedTemporaryFile("wb+", suffix=".wav")
+    f.close()
+
+    ffmpeg_cmd: list =  f"ffmpeg -i {tvideo_path} {f.name}".split()
+    try:
+        print(ffmpeg_cmd)
+        with Popen(ffmpeg_cmd, stdin=subprocess.PIPE) as proc:
+            proc.communicate(input=data)
+        text = transcribe(f.name)
+    except Exception as e:
+        print(f"{type(e)} : {e}")
+        await bot.send_message(msg.chat.id,"Error :(")
+        return
+
+    finally:
+        os.remove(f.name)
+        os.remove(tvideo_path)
 
     await bot.edit_message_text(text, msg.chat.id, raspuns.id)
 
